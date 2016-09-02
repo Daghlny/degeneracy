@@ -19,15 +19,16 @@ int   *degree;
 inline void
 addEdge(vid_t v, vid_t u, vlist **datap, int *deg)
 {
+    typedef std::pair<vlistIt, bool> vlistInsert_t;
     if(datap[v] == NULL) datap[v] = new vlist();
     if(datap[u] == NULL) datap[u] = new vlist();
-    datap[v]->insert(u);
-    datap[u]->insert(v);
+    vlistInsert_t uit = datap[v]->insert(u);
+    vlistInsert_t vit = datap[u]->insert(v);
 
     if(deg[v] < 0) ++deg[v]; 
     if(deg[u] < 0) ++deg[u]; 
-    ++deg[v];
-    ++deg[u];
+    if( uit.second == true ) ++deg[v];
+    if( vit.second == true ) ++deg[u];
 }
 
 void
