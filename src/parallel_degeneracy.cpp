@@ -6,12 +6,14 @@
 #include <string>
 #include <cstdlib>
 #include <cstring>
-
+#include <utility>
+#include <algorithm>
+#include "omp.h"
 using std::string;
 
 typedef uint32_t vid_t;
-typedef std::set<vid_t> vlist;
-typedef std::set<vid_t>::iterator vlistIt;
+typedef std::vector<vid_t> vlist;
+typedef std::vector<vid_t>::iterator vlistIt;
 
 vlist **G;         // points to a array of adjacency lists
 int   *degree;
@@ -26,13 +28,20 @@ addEdge(vid_t v, vid_t u, vlist **datap, int *deg)
     typedef std::pair<vlistIt, bool> vlistInsert_t;
     if(datap[v] == NULL) datap[v] = new vlist();
     if(datap[u] == NULL) datap[u] = new vlist();
-    vlistInsert_t uit = datap[v]->insert(u);
-    vlistInsert_t vit = datap[u]->insert(v);
+    vlistIt uit = std::find(datap[v]->begin(), datap[v]->end(), u);
+    vlistIt vit = std::find(datap[u]->begin(), datap[u]->end(), v);
 
-    if(deg[v] < 0) ++deg[v]; 
-    if(deg[u] < 0) ++deg[u]; 
-    if( uit.second == true ) ++deg[v];
-    if( vit.second == true ) ++deg[u];
+    if( uit ==  datap[v]->end() ){
+        if(deg[v] < 0) ++deg[v];
+        ++deg[v];
+        datap[v]->push_back(u);
+    }
+
+    if( vit == datap[u]->end() ){
+        if(deg[u] < 0) ++deg[u];
+        ++deg[u];
+        datap[u]->push_back(v);
+    }
 }
 
 /*
@@ -59,6 +68,7 @@ readGraph(vlist** datap, char *inFileName, int *degree)
         vid_t sour = atoi(line.substr(0, seperator).c_str());
         vid_t dest = atoi(line.substr(seperator, line.size()-seperator).c_str());
 
+        //std::cout << sour << " || " << dest << std::endl;
         addEdge(sour, dest, datap, degree);
     }
     inFile.close();
@@ -76,6 +86,7 @@ smallestDegVertex(int *deg, int len, int &mindeg)
     vid_t res_vertex = 0;
     mindeg = -1;
     for(int i = 0; i != len; ++i){
+        //std::cout << i << " ** " << deg[i] << std::endl;
         if( deg[i] >= 0 && mindeg < 0 ){
             res_vertex = i;
             mindeg = deg[i];
@@ -144,6 +155,7 @@ main(int argc, char **argv)
      
         currv = smallestDegVertex(degree, memnode, mindeg);
         if( ifoutput ){
+            //std::cout << currv << '\t' << mindeg << std::endl;
             fprintf(wfile, "%d:%d\n", currv, mindeg);
         }
         if( G[currv] == NULL )
@@ -152,9 +164,13 @@ main(int argc, char **argv)
             std::cout << "The Vertex: " << currv << std::endl;
             exit(0);
         }
-        for( vlistIt it = G[currv]->begin(); it != G[currv]->end(); it++) {
-            if( G[*it] == NULL ) continue;
-            --degree[*it];
+        omp_set_num_threads(4);
+        int size = G[currv]->size();
+#pragma omp parallel for schedule(dynamic)
+        for( int i = 0; i < size; i++) {
+            vid_t v = G[currv]->at(i);
+            if( G[v] == NULL ) continue;
+            --degree[v];
         }
 
 
