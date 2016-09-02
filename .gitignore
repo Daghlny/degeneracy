@@ -1,3 +1,7 @@
+
+*.txt
+tags
+
 # Compiled Object files
 *.slo
 *.lo
