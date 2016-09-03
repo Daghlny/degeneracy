@@ -107,6 +107,7 @@ smallestDegVertex(int *deg, int len, int &mindeg)
  * @argv[2]: the exact total number of the input graph
  * @argv[3]: whether output the degeneracy ordering
  * @argv[4]: the number of memory nodes should be assigned to give redundancy
+ * @argv[5]: the output file with degeneracy ordering infomation
  */
 int
 main(int argc, char **argv)
@@ -114,7 +115,7 @@ main(int argc, char **argv)
    
     if( argc < 4 )
     {
-        std::cout << "Program inputfile totalvertex whetheroutput [InMemNode]";
+        std::cout << "Program inputfile totalvertex whetheroutput [InMemNode] [outputfile]";
         std::cout << std::endl;
         exit(1);
     }
@@ -123,8 +124,12 @@ main(int argc, char **argv)
     int ifoutput = atoi(argv[3]);
     if( ifoutput ){
         char *outputfilename = (char*)malloc(sizeof(char) * 200);
-        strcpy( outputfilename, argv[1] );
-        strcat( outputfilename, ".degeneracy.txt" );
+        if( argc == 6 ){
+            strcpy( outputfilename, argv[5] );
+        } else {
+            strcpy( outputfilename, argv[1] );
+            strcat( outputfilename, ".degeneracy.txt" );
+        }
         wfile = fopen(outputfilename, "w");
         if( wfile == NULL ){
             std::cout << "open output file error" << std::endl;
@@ -134,7 +139,8 @@ main(int argc, char **argv)
 
     int nodenum = atoi(argv[2]);
     int memnode = nodenum+100;
-    if( argc == 5 ){
+    if( argc > 4 ){
+
         memnode = atoi(argv[4]);
     }
     G = (vlist**)malloc(sizeof(vlist*) * memnode);
@@ -151,9 +157,17 @@ main(int argc, char **argv)
     vid_t currv = 0;
     int   mindeg = 0;
 
+    std::pair<vid_t, int> result;
+    result.first = 0;
+    result.second = -1;
+
     while(remaining_vertex != 0){
      
         currv = smallestDegVertex(degree, memnode, mindeg);
+        if( mindeg > result.second ){
+            result.first = currv;
+            result.second = mindeg;
+        }
         if( ifoutput ){
             //std::cout << currv << '\t' << mindeg << std::endl;
             fprintf(wfile, "%d:%d\n", currv, mindeg);
@@ -181,6 +195,8 @@ main(int argc, char **argv)
     }
 
     fclose(wfile);
+    std::cout << "The degeneracy: " << result.second << std::endl;
+    std::cout << "Vertex ID: " << result.first << std::endl;
 
     return 1;
 }
