@@ -20,22 +20,38 @@ int
 inputbuffer::getline(char *&start, char *&end)
 {
     if( curpos >= endpos ){
-        int res = FillInputBuffer();
-        if( res == 0 ){
+        int res = FillInputBuffer(curpos);
+        if( res == 0 )
+        {
             printf("the input buffer size is too small\n");
             exit(0);
         }
         if( res < 0 )
             return res;
     }
+
     start = curpos;
-    while( *curpos != '\n' ) curpos++;
+    while( *curpos != '\n'){
+        if( curpos > endpos ){
+            /* 
+             * if the @curpos > @endpos, it means we have already read all data in 
+             * inputbuffer, but we still attach the line's end
+             * so we need to get more data from file
+             */
+            int byteread = FillInputBuffer(start);
+            //printf("byteread: %d, curpos: %d\n", byteread, curpos);
+            start = curpos;
+            curpos += size-byteread;
+        }
+        curpos++;
+    }
     end = curpos-1;
+
     if( ++curpos >= endpos )
     {
         end = curpos;
         if( feof(file) ) return -1;
-        FillInputBuffer();
+        FillInputBuffer(curpos);
     }
     return end - start;
 }
@@ -47,21 +63,25 @@ inputbuffer::getline(char *&start, char *&end)
  * return value < 0 represents the file have touched EOF
  */
 int
-inputbuffer::FillInputBuffer()
+inputbuffer::FillInputBuffer(char *pos)
 {
-    int i = endpos - curpos;
+    //printf("endpos: %d, pos: %d\n", endpos, pos);
+    int i = endpos - pos;
     if( i >= size ){
         return 0;
     }
 
-    if(curpos < endpos)
+    if(pos < endpos)
     {
-        memmove(buff, curpos, i);
+        memmove(buff, pos, i);
         endpos = buff + i;
         curpos = buff;
-    } else {
+    } else if(pos == endpos){
         curpos = buff;
         endpos = buff;
+    } else {
+        printf(" the @pos > @endpos in @FillInputBuffer()\n");
+        exit(0);
     }
 
     if(!feof(file))
@@ -76,6 +96,7 @@ inputbuffer::FillInputBuffer()
                 }
             }
         }
+
     }
 
 }

@@ -30,7 +30,7 @@ int main(int argc, char **argv)
         exit(0);
     }
 
-    inputbuffer ibuff(1024, infile);
+    inputbuffer ibuff(200, infile);
     std::cout << "size: " << ibuff.getsize() << std::endl;
     char *start, *end;
     for( int i = 0; i != 10; ++i ){

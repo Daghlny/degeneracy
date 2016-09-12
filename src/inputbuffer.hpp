@@ -22,7 +22,7 @@ class inputbuffer
             buff = (char*)malloc(sizeof(char) * size);
             curpos = buff;
             endpos = buff;
-            FillInputBuffer();
+            FillInputBuffer(curpos);
         }
 
         inputbuffer(FILE *infile):
@@ -31,7 +31,7 @@ class inputbuffer
             buff = (char*)malloc(sizeof(char) * BUFF_SIZE);
             curpos = buff;
             endpos = buff;
-            FillInputBuffer();
+            FillInputBuffer(curpos);
         }
 
         /* read a line from the input buffer */
@@ -39,7 +39,7 @@ class inputbuffer
         size_t getsize();
 
     protected:
-        int FillInputBuffer();
+        int FillInputBuffer(char *pos);
 
     private:
         char *buff;         // points to the input buffer memory area
