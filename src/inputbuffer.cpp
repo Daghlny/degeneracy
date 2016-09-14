@@ -19,6 +19,7 @@ class inputbuffer;
 int
 inputbuffer::getline(char *&start, char *&end)
 {
+    //printf("curpos: %d, endpos: %d\n", curpos, endpos);
     if( curpos >= endpos ){
         int res = FillInputBuffer(curpos);
         if( res == 0 )
