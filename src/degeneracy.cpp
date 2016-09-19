@@ -24,8 +24,11 @@ inline void
 addEdge(vid_t v, vid_t u, vlist **datap, int *deg)
 {
     typedef std::pair<vlistIt, bool> vlistInsert_t;
-    if(datap[v] == NULL) datap[v] = new vlist();
-    if(datap[u] == NULL) datap[u] = new vlist();
+    if(datap[v] == NULL) 
+        datap[v] = new vlist();
+    if(datap[u] == NULL) 
+        datap[u] = new vlist();
+
     vlistInsert_t uit = datap[v]->insert(u);
     vlistInsert_t vit = datap[u]->insert(v);
 
@@ -108,7 +111,7 @@ main(int argc, char **argv)
         exit(1);
     }
 
-    FILE *wfile;
+    FILE *wfile = NULL;
     int ifoutput = atoi(argv[3]);
     if( ifoutput ){
         char *outputfilename = (char*)malloc(sizeof(char) * 200);
