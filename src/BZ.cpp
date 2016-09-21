@@ -26,6 +26,7 @@ using std::vector;
  */
 int main(int argc, char **argv)
 {
+    /* handle the input/output files */
     FILE *infile = fopen(argv[1], "r+");
     FILE *outfile = NULL;
     if( infile == NULL ){
@@ -59,30 +60,40 @@ int main(int argc, char **argv)
     init_bin(bin, deg, pos, vert, md, nodenum);
 
     int degeneracy = 0;
+    vid_t thevertex  = 0;
 
     /* Main Loop */
     for( vid_t i = 0; i != nodenum; ++i )
     {
         /* the vertex @v is the chosen vertex in this iteration */
         vid_t v = vert[i];
+
         if(deg[v] > degeneracy)
+        {
             degeneracy = deg[v];
+            thevertex  = v;
+        }
+
+        /* output to file with format */
+        fprintf(outfile, "%d : %d\n", v, deg[v]);
+
         for(vIt it = g[v]->begin(); it != g[v]->end(); ++it)
         {
-            if(deg[*it] < deg[v]){
+            /* if(deg[*it] < deg[v]){ */
+            if( pos[*it] < bin[deg[v]] ){
                 continue;
                 printf("the neighbor(id: %d)'s degree is smaller than @v(id: %d)\n", *it, v);
                 exit(0);
             }
-
-            /* output format */
-            fprintf(outfile, "%d : %d\n", v, deg[v]);
 
             /* for each neighbor of @v, its degree should be decreased */
             vid_t du = deg[*it];    // degree of the neighbor
             int   pu = pos[*it];    // current position of neighbor
             int   pw = bin[du];     // begin position of neighbor's degree
             int   w  = vert[pw];    // first vertex in the @vert with @du degree
+            if( *it == 1005 ){
+                printf("%d\n", v);
+            }
 
             if(*it != w)
             {
@@ -98,6 +109,7 @@ int main(int argc, char **argv)
         }
     }
     printf("degeneracy: %d\n", degeneracy);
+    printf("vertex: %d\n", thevertex);
 
     return 1;
 }
