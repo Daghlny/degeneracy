@@ -1,6 +1,7 @@
 
 *.txt
 *.swp
+*.swo
 tags
 
 # Compiled Object files
