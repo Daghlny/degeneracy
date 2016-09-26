@@ -51,6 +51,17 @@ int main(int argc, char **argv)
     vid_t *vert = (vid_t*)malloc(sizeof(vid_t) * nodenum);
     vid_t *pos  = (vid_t*)malloc(sizeof(vid_t) * nodenum);
     vid_t *deg  = (vid_t*)malloc(sizeof(vid_t) * nodenum);
+    int   *flag = (int*)malloc(sizeof(int) * nodenum);
+
+    /* check the malloc's memory block whether is available */
+    if( vert == NULL || pos == NULL || deg == NULL || flag == NULL ){
+        printf("allocate memory error\n");
+        exit(1);
+    }
+
+    /* initialize the @flag array */
+    for( int i = 0; i != nodenum; ++i )
+        flag[i] = 1;
 
     /* reading graph data from file */
     inputbuffer ibuff(infile);
@@ -79,8 +90,11 @@ int main(int argc, char **argv)
 
         for(vIt it = g[v]->begin(); it != g[v]->end(); ++it)
         {
-            /* if(deg[*it] < deg[v]){ */
-            if( pos[*it] < bin[deg[v]] ){
+            /* if(deg[*it] < deg[v]){ 
+            if( pos[*it] < bin[deg[v]] ) 
+            if( pos[*it] < i )*/
+            if( flag[*it] == -1 )
+            {
                 continue;
                 printf("the neighbor(id: %d)'s degree is smaller than @v(id: %d)\n", *it, v);
                 exit(0);
@@ -90,23 +104,29 @@ int main(int argc, char **argv)
             vid_t du = deg[*it];    // degree of the neighbor
             int   pu = pos[*it];    // current position of neighbor
             int   pw = bin[du];     // begin position of neighbor's degree
+            if( pw < i+1 )
+                pw = i+1;
             int   w  = vert[pw];    // first vertex in the @vert with @du degree
-            if( *it == 1005 ){
-                printf("%d\n", v);
-            }
 
             if(*it != w)
             {
-                /* exchange the two vertices' position in the list */
+                /* exchange the two vertices' position(@it and @w) in the list */
                 pos[*it] = pw;
                 pos[w]   = pu;
                 vert[pu] = w;
                 vert[pw] = *it;
             }
 
-            ++bin[du];
+            /* to prevent more than one degree have the same begin position in @vert */
+            for( vid_t degree = du; bin[degree] == pw && degree != md; ++degree)
+                ++bin[degree];
+
+            if( *it == 3620 && v == 995)
+                printf("%d\n", v);
+
             --deg[*it];
         }
+        flag[v] = -1;
     }
     printf("degeneracy: %d\n", degeneracy);
     printf("vertex: %d\n", thevertex);
@@ -180,7 +200,7 @@ init_bin(int *bin, vid_t *deglist, vid_t *pos, vid_t *vert, vid_t md, vid_t node
         ++bin[deglist[i]];
     }
 
-    for(vid_t i = nodenum; i > 0; --i)
+    for(vid_t i = md; i > 0; --i)
         bin[i] = bin[i-1];   
     bin[0] = 0;
     
