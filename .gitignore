@@ -3,6 +3,7 @@
 *.swp
 *.swo
 tags
+./bin
 
 # Compiled Object files
 *.slo
