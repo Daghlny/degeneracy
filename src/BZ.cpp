@@ -150,7 +150,7 @@ init_g(inputbuffer &ibuff, vid_t* deglist, int nodenum)
         vid_t v = 0;
         do{
             v = (10 * v) + int(*start)-48;
-        }while( *(++start) != ',' );
+        }while( *(++start) != ',' && *start != '\n' );
 
         //printf("nodenum: %d, v: %d\n", nodenum, v);
         if( v > nodenum || g[v] != NULL){
@@ -159,13 +159,14 @@ init_g(inputbuffer &ibuff, vid_t* deglist, int nodenum)
         }
 
         vid_t deg = 0;
-        while( *(++start) != ':' ){
+        while( *(++start) != ':' && *start != '\n'){
             deg = (10 * deg) + int(*start) - 48;
         }
 
         deglist[v] = deg;
         if( deg > md ) md = deg;
         g[v] = new vector<vid_t>(deg);
+
         for(int i = 0; i != deg; ++i)
         {
             vid_t u = 0;
