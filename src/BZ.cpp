@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
     /* get the total vertices number and use it to initilize arrays */
     int nodenum = 0;
-    fscanf(infile, "%d", &nodenum);
+    fscanf(infile, "%d\n", &nodenum);
     g = (vlist **)malloc(sizeof(vlist*) * nodenum);
     for( int i = 0; i != nodenum; ++i )
         g[i] = NULL;
@@ -148,16 +148,13 @@ init_g(inputbuffer &ibuff, vid_t* deglist, int nodenum)
         if( result < 0 ) break;
 
         vid_t v = 0;
-        while( *(++start) != ',' && *start != '\n' )
+        while( *start == '\n' ) ++start;
+        while( *(start) != ',')
         {
-            if( ibuff.getoffset(start) == 0 ) --start;
             v = (10 * v) + int(*start) - 48;
+            ++start;
         }
-        do{
-            v = (10 * v) + int(*start)-48;
-        }while( *(++start) != ',' && *start != '\n' );
 
-        //printf("nodenum: %d, v: %d\n", nodenum, v);
         if( v > nodenum || g[v] != NULL){
             printf("the value of @v is wrong\n");
             exit(0);
