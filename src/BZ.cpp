@@ -148,6 +148,11 @@ init_g(inputbuffer &ibuff, vid_t* deglist, int nodenum)
         if( result < 0 ) break;
 
         vid_t v = 0;
+        while( *(++start) != ',' && *start != '\n' )
+        {
+            if( ibuff.getoffset(start) == 0 ) --start;
+            v = (10 * v) + int(*start) - 48;
+        }
         do{
             v = (10 * v) + int(*start)-48;
         }while( *(++start) != ',' && *start != '\n' );

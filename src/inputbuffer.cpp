@@ -102,9 +102,10 @@ inputbuffer::FillInputBuffer(char *pos)
 
 }
 
-size_t
+inline size_t
 inputbuffer::getsize(){
     return size;
 }
+
 
 

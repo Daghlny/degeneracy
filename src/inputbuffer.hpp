@@ -36,7 +36,8 @@ class inputbuffer
 
         /* read a line from the input buffer */
         int getline(char *&start, char *&end);
-        size_t getsize();
+        inline size_t getsize();
+        inline int getoffset(char *start);
 
     protected:
         int FillInputBuffer(char *pos);
@@ -49,6 +50,12 @@ class inputbuffer
         size_t size;        // input buffer size, default 1MB(1024*1024)
 };
 
+
+inline int
+inputbuffer::getoffset(char *start)
+{
+   return (start-buff); 
+}
 
 #endif
 
