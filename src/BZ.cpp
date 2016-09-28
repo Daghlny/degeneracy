@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
     /* get the total vertices number and use it to initilize arrays */
     int nodenum = 0;
-    fscanf(infile, "%d\n", &nodenum);
+    fscanf(infile, "%d", &nodenum);
     g = (vlist **)malloc(sizeof(vlist*) * nodenum);
     for( int i = 0; i != nodenum; ++i )
         g[i] = NULL;
