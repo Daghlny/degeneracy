@@ -78,6 +78,11 @@ int main(int argc, char **argv)
     {
         /* the vertex @v is the chosen vertex in this iteration */
         vid_t v = vert[i];
+        /* debug */
+        if(v == 22){
+            printf("catch it\n");
+        }
+        /* end */
 
         if(deg[v] > degeneracy)
         {
@@ -102,15 +107,15 @@ int main(int argc, char **argv)
 
             /* for each neighbor of @v, its degree should be decreased */
             vid_t du = deg[*it];    // degree of the neighbor
-            int   pu = pos[*it];    // current position of neighbor
+            int   pu = pos[*it];    // current position of the neighbor
+            if( bin[du] < i+1 ) bin[du] = i+1;
             int   pw = bin[du];     // begin position of neighbor's degree
-            if( pw < i+1 )
-                pw = i+1;
+
             int   w  = vert[pw];    // first vertex in the @vert with @du degree
 
             if(*it != w)
             {
-                /* exchange the two vertices' position(@it and @w) in the list */
+                /* exchange two vertices' position(@it and @w) */
                 pos[*it] = pw;
                 pos[w]   = pu;
                 vert[pu] = w;
@@ -120,9 +125,6 @@ int main(int argc, char **argv)
             /* to prevent more than one degree have the same begin position in @vert */
             for( vid_t degree = du; bin[degree] == pw && degree != md; ++degree)
                 ++bin[degree];
-
-            if( *it == 3620 && v == 995)
-                printf("%d\n", v);
 
             --deg[*it];
         }
@@ -141,24 +143,36 @@ init_g(inputbuffer &ibuff, vid_t* deglist, int nodenum)
 {
     int count = nodenum;
     vid_t md  = 0;
+
+    /* debug */
+    vid_t last_vertex = 0;
+    char* last_start  = NULL;
+    /* end */
+
     while(--count >= 0)
     {
         char *start, *end;
-        int result = ibuff.getline(start, end);
-        if( result < 0 ) break;
+        if( ibuff.getline(start, end) < 0 ) break;
 
         vid_t v = 0;
         while( *start == '\n' ) ++start;
+
+        char *lstart = start;//debug
+
         while( *(start) != ',')
         {
             v = (10 * v) + int(*start) - 48;
             ++start;
         }
+        printf("%d\n", v);//debug
 
         if( v > nodenum || g[v] != NULL){
-            printf("the value of @v is wrong\n");
+            printf("the value of @v is wrong (id: %d)\n", v);
             exit(0);
         }
+
+        last_start  = start; //debug
+        last_vertex = v;     //debug
 
         vid_t deg = 0;
         while( *(++start) != ':' && *start != '\n'){

@@ -13,47 +13,57 @@ class inputbuffer;
 
 /*
  * get a line marked by @start and @end
- * returnvalue < 0 if the file is over
- * returnvalue > 0 is the characters in this line
+ * returnvalue < 0 if the file is over(it means no more lines)
+ * returnvalue > 0 is the number of characters in this line
  */
 int
 inputbuffer::getline(char *&start, char *&end)
 {
     //printf("curpos: %d, endpos: %d\n", curpos, endpos);
-    if( curpos >= endpos ){
+    if( curpos >= endpos )
+    {
         int res = FillInputBuffer(curpos);
         if( res == 0 )
         {
             printf("the input buffer size is too small\n");
             exit(0);
         }
-        if( res < 0 )
-            return res;
+        if( res < 0 ) return res;
     }
 
     start = curpos;
-    while( *curpos != '\n'){
+    while( *curpos != '\n')
+    {
         if( curpos > endpos ){
             /* 
              * if the @curpos > @endpos, it means we have already read all data in 
              * inputbuffer, but we still attach the line's end
              * so we need to get more data from file
              */
+            unsigned int offset = curpos - start;
             int byteread = FillInputBuffer(start);
             //printf("byteread: %d, curpos: %d\n", byteread, curpos);
-            start = curpos;
-            curpos += size-byteread;
+            start = curpos; // it equals to start == buff
+            //curpos += size-byteread;
+            curpos += offset;
         }
         curpos++;
     }
-    end = curpos-1;
+    end = curpos; // curpos should point to '\n' in this statement
+    while( *curpos == '\n' ) ++curpos;
 
+    /*
+     * in this statement, *(@curpos) == '\n', so ++curpos will make
+     * @curpos point to the next charactor which is not '\n'
+     */
+    /*
     if( ++curpos >= endpos )
     {
         end = curpos;
         if( feof(file) ) return -1;
         FillInputBuffer(curpos);
     }
+    */
     return end - start;
 }
 
@@ -67,10 +77,10 @@ int
 inputbuffer::FillInputBuffer(char *pos)
 {
     //printf("endpos: %d, pos: %d\n", endpos, pos);
+    printf("Fill Input Buffer(curpos: %d endpos: %d pos: %d)\n", curpos, endpos, pos); //debug
     int i = endpos - pos;
-    if( i >= size ){
-        return 0;
-    }
+    if( i >= size ) return 0;
+    
 
     if(pos < endpos)
     {
@@ -88,7 +98,8 @@ inputbuffer::FillInputBuffer(char *pos)
     if(!feof(file))
     {
         int byteread = fread( endpos, 1, size-i, file );
-        endpos += size-i;
+        //endpos += size-i;
+        endpos += byteread;
         if( byteread < size-i ){
             if(!feof(file)){
                 if(ferror(file)){
