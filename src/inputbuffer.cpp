@@ -83,7 +83,7 @@ inputbuffer::FillInputBuffer(char *pos)
         int byteread = fread( endpos, 1, size-i, file );
         endpos += byteread;
         if( byteread < size-i ){
-            if(!feof(file) && ferror(file))
+            if(!feof(file) && ferror(file)){
                 perror("Error reading from input file. Abort!\n");
                 exit(0);
             }
