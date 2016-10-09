@@ -26,6 +26,11 @@ using std::vector;
  */
 int main(int argc, char **argv)
 {
+    if( argc != 3 )
+    {
+        printf("BZ inputfile degeneracyOrdingFile\n");
+        exit(0);
+    }
     /* handle the input/output files */
     FILE *infile = fopen(argv[1], "r+");
     FILE *outfile = NULL;
@@ -78,11 +83,6 @@ int main(int argc, char **argv)
     {
         /* the vertex @v is the chosen vertex in this iteration */
         vid_t v = vert[i];
-        /* debug */
-        if(v == 22){
-            printf("catch it\n");
-        }
-        /* end */
 
         if(deg[v] > degeneracy)
         {
@@ -144,11 +144,7 @@ init_g(inputbuffer &ibuff, vid_t* deglist, int nodenum)
     int count = nodenum;
     vid_t md  = 0;
 
-    /* debug */
-    vid_t last_vertex = 0;
-    char* last_start  = NULL;
-    /* end */
-
+    /* for every iteration in this loop, it represents a single line in graph file */
     while(--count >= 0)
     {
         char *start, *end;
@@ -157,22 +153,16 @@ init_g(inputbuffer &ibuff, vid_t* deglist, int nodenum)
         vid_t v = 0;
         while( *start == '\n' ) ++start;
 
-        char *lstart = start;//debug
-
         while( *(start) != ',')
         {
             v = (10 * v) + int(*start) - 48;
             ++start;
         }
-        printf("%d\n", v);//debug
 
         if( v > nodenum || g[v] != NULL){
             printf("the value of @v is wrong (id: %d)\n", v);
             exit(0);
         }
-
-        last_start  = start; //debug
-        last_vertex = v;     //debug
 
         vid_t deg = 0;
         while( *(++start) != ':' && *start != '\n'){

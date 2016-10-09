@@ -19,7 +19,6 @@ class inputbuffer;
 int
 inputbuffer::getline(char *&start, char *&end)
 {
-    //printf("curpos: %d, endpos: %d\n", curpos, endpos);
     if( curpos >= endpos )
     {
         int res = FillInputBuffer(curpos);
@@ -42,28 +41,15 @@ inputbuffer::getline(char *&start, char *&end)
              */
             unsigned int offset = curpos - start;
             int byteread = FillInputBuffer(start);
-            //printf("byteread: %d, curpos: %d\n", byteread, curpos);
             start = curpos; // it equals to start == buff
-            //curpos += size-byteread;
-            curpos += offset;
+            /* this will make curpos points to the elem before the proper position */
+            curpos += offset-2;
         }
         curpos++;
     }
     end = curpos; // curpos should point to '\n' in this statement
     while( *curpos == '\n' ) ++curpos;
 
-    /*
-     * in this statement, *(@curpos) == '\n', so ++curpos will make
-     * @curpos point to the next charactor which is not '\n'
-     */
-    /*
-    if( ++curpos >= endpos )
-    {
-        end = curpos;
-        if( feof(file) ) return -1;
-        FillInputBuffer(curpos);
-    }
-    */
     return end - start;
 }
 
@@ -76,11 +62,8 @@ inputbuffer::getline(char *&start, char *&end)
 int
 inputbuffer::FillInputBuffer(char *pos)
 {
-    //printf("endpos: %d, pos: %d\n", endpos, pos);
-    printf("Fill Input Buffer(curpos: %d endpos: %d pos: %d)\n", curpos, endpos, pos); //debug
     int i = endpos - pos;
     if( i >= size ) return 0;
-    
 
     if(pos < endpos)
     {
@@ -98,18 +81,17 @@ inputbuffer::FillInputBuffer(char *pos)
     if(!feof(file))
     {
         int byteread = fread( endpos, 1, size-i, file );
-        //endpos += size-i;
         endpos += byteread;
         if( byteread < size-i ){
-            if(!feof(file)){
-                if(ferror(file)){
-                    perror("Error reading from input file. Abort!\n");
-                    exit(0);
-                }
+            if(!feof(file) && ferror(file))
+                perror("Error reading from input file. Abort!\n");
+                exit(0);
             }
         }
+        return byteread;
 
-    }
+    } else
+        return -1;
 
 }
 
