@@ -2,6 +2,7 @@
 *.txt
 *.swp
 *.swo
+*.out
 tags
 ./bin
 
