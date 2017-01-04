@@ -1,14 +1,11 @@
 # degeneracy
 A quick algorithm implementation of degeneracy computing.
 
-use commands below to compile the sequential program:
+use command below to compile the sequential program:
 ```
-g++ -std=c++11 -O3 ./src/degeneracy.cpp -o degeneracy.out
+make
 ```
+the algorithm is designed by Batagelj & Zaversnik
 
-use command below to compile the parallel version:
-```
-g++ -std=c++11 -O3 -fopenmp ./src/parallel_degeneracy.cpp -o parallel.out
-```
+the algorithm first published in the paper named "An O(m) Algorithm for Cores Decomposition of Networks"
 
-the memory space required is almost $O(m+n)$

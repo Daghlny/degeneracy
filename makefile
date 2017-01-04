@@ -13,13 +13,3 @@ bz: src/BZ.cpp src/BZ.hpp src/inputbuffer.cpp src/inputbuffer.hpp
 	g++ $(GCCFLAGS) ./src/BZ.cpp ./src/inputbuffer.cpp -o ./bin/bz.out
 
 
-normal: src/degeneracy.cpp
-	make checkbin;
-	g++ $(GCCFLAGS) ./src/degeneracy.cpp -o ./bin/normal.out
-
-
-parallel: src/parallel_degeneracy.cpp
-	make checkbin;
-	g++ $(GCCFLAGS) $(OPENMP) ./src/parallel_degeneracy.cpp -o ./bin/parallel.out
-
-
