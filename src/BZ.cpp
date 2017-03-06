@@ -91,7 +91,7 @@ int main(int argc, char **argv)
         }
 
         /* output to file with format */
-        fprintf(outfile, "%d : %d\n", v, deg[v]);
+        fprintf(outfile, "%d:%d\n", v, deg[v]);
 
         for(vIt it = g[v]->begin(); it != g[v]->end(); ++it)
         {
