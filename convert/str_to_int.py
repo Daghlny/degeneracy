@@ -1,3 +1,4 @@
+
 import sys
 import json
 import os
@@ -37,7 +38,6 @@ if __name__ == '__main__':
     inputFile = open(inputFileName,'r')
     tempFile = open(outputFileName + '_temp','w')
     dicFile = open(outputFileName + '_dict','w')
-    #reversedicFile = open(outputFileName + '_rev-dict','w')
 
     for line in inputFile:
         line = line.strip()
@@ -54,8 +54,6 @@ if __name__ == '__main__':
     dicFile.write("#originalID  hashedID")
     dicFile.write(json.dumps(dictionary,indent=4))
 
-#edit here to reduce io
-    #rev_dict = dict([[v,k] for k,v in dictionary.items() ])
-    #reversedicFile.write(json.dumps(rev_dict,indent=4))
     os.remove(outputFileName + '_temp')
     print "counter is ",counter
+

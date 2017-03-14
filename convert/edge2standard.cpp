@@ -57,9 +57,9 @@ inline bool insert(int *&Gu, int v){
 
 int main(int argc, char *argv[]){
 
-    if( argc != 3 )
+    if( argc < 3 )
     {
-        printf("programName inputfile logfile(for duplicate edges)\n");
+        printf("programName inputfile logfile(for duplicate edges) iterationSteps(default: 10000)\n");
         exit(0);
     }
 
@@ -82,6 +82,8 @@ int main(int argc, char *argv[]){
         printf("could not open the log file\n");
         exit(0);
     }
+    
+    const int itsteps = (argc > 3) ? atoi(argv[3]) : 10000;
 
     /* vertex number */
 	int nodenum;
@@ -124,7 +126,7 @@ int main(int argc, char *argv[]){
             dupedgenum++;
         }
 
-		if(i % 1000==0) printf("now it is in edge %d\n",i);
+		if(i % itsteps == 0) printf("now it is in edge %d\n",i);
 		i++;
 	}
     fprintf(logfile, "%d", dupedgenum);
