@@ -1,12 +1,16 @@
 
 #include <cstdio>
 #include <map>
+#include <vector>
+#include "inputbuffer.hpp"
 
+using std::vector;
 using std::map;
 
 // argv[1] = degeneracy order dictionary file
 // argv[2] = graph data file
 // argv[3] = 
+
 int
 main(int argc, char **argv)
 {
@@ -16,10 +20,13 @@ main(int argc, char **argv)
 
     inputbuffer ddbuffer(ddfile), gbuffer(gfile);
 
-    map<vid_t, vid_t> ddmap;  
+    map<vid_t, vid_t> ddmap;
     vector<vid_t> ddvertex(0);
     vid_t degeneracy = 0;
     get_vertex_dd_map(ddvertex, degeneracy, ddmap, ddbuffer);
+    
+    
+    get_whole_graph(g)
     
     printf("the degeneracy vertex:");
     for(vIt it = ddvertex.begin(); it != ddvertex.end(); ++it){
@@ -76,5 +83,5 @@ get_vertex_dd_map(vector<vid_t> ddvertex, vid_t degeneracy, map<vid_t, vid_t> &d
 void
 get_neighbor_cc(vid_t vertex, vector<vid_t> cc)
 {
-
+    
 }
